@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import dotenv from "dotenv";
-import Payment from "../Models/Payment.js";
+import Payment from "../Models/payment.js";
 
 dotenv.config();
 
