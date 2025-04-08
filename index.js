@@ -11,17 +11,23 @@ import paymentRoutes from "./Routes/paymentRoutes.js";
 dotenv.config();
 const app = express();
 
-// ✅ Enable CORS for frontend
+// ✅ Connect to MongoDB
+connectDB();
+
+// ✅ CORS setup for frontend (localhost + production)
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://your-frontend-url.onrender.com", // replace with actual deployed frontend
+];
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
   })
 );
-app.use(express.json());
 
-// ✅ Connect to MongoDB
-connectDB();
+// ✅ Parse JSON
+app.use(express.json());
 
 // ✅ Serve static files from uploads folder
 const __dirname = path.resolve();

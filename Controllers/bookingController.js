@@ -71,15 +71,26 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
-// ✅ Get Bookings for Logged-in User
+// ✅ Get Bookings for Logged-in User (with imageUrl debug)
 export const getUserBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ user: req.user.id }).populate(
-      "vehicle",
-      "make model image pricePerDay"
-    );
+    const bookings = await Booking.find({ user: req.user.id }).populate({
+      path: "vehicle",
+      select: "make model imageUrl pricePerDay",
+    });
+
+    // 🔍 Log to verify vehicle data
+    bookings.forEach((booking, i) => {
+      if (!booking.vehicle) {
+        console.warn(`⚠️ Vehicle not found for booking ${booking._id}`);
+      } else {
+        console.log(`🖼️ [${i}] Vehicle Image URL: ${booking.vehicle.imageUrl}`);
+      }
+    });
+
     res.status(200).json(bookings);
   } catch (error) {
+    console.error("❌ Error fetching user bookings:", error);
     res.status(500).json({ message: "Error fetching user bookings", error });
   }
 };

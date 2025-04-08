@@ -6,7 +6,7 @@ const vehicleSchema = new mongoose.Schema({
   year: { type: Number, required: true },
   pricePerDay: { type: Number, required: true },
   availability: { type: Boolean, default: true },
-  imageUrl: { type: String, required: true }, // Cloudinary URL
+  imageUrl: { type: String, required: true }, // Cloudinary or static URL
   description: { type: String },
 });
 
