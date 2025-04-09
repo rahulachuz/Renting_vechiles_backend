@@ -20,7 +20,7 @@ connectDB();
 // ✅ Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://renting-vehicle-front-end-mfl7.vercel.app",
+  "https://renting-vehicle-front-end.vercel.app",
 ];
 
 // ✅ CORS Middleware
