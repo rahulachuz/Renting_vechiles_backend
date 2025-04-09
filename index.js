@@ -17,10 +17,10 @@ const app = express();
 // ✅ Connect to MongoDB
 connectDB();
 
-// ✅ Allowed frontend origins (NO trailing slash)
+// ✅ Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://renting-vehicle-front-end.vercel.app",
+  "https://renting-vehicle-front-end-mfl7.vercel.app",
 ];
 
 // ✅ CORS Middleware
@@ -36,6 +36,9 @@ app.use(
     credentials: true,
   })
 );
+
+// ✅ Allow preflight OPTIONS requests for all routes
+app.options("*", cors());
 
 // ✅ Parse JSON
 app.use(express.json());
