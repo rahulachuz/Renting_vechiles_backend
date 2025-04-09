@@ -8,20 +8,31 @@ import authRoutes from "./Routes/authRoutes.js";
 import bookingRoutes from "./Routes/bookingRoutes.js";
 import paymentRoutes from "./Routes/paymentRoutes.js";
 
+// Load environment variables
 dotenv.config();
+
+// Initialize app
 const app = express();
 
 // ✅ Connect to MongoDB
 connectDB();
 
-// ✅ CORS setup for frontend (localhost + production)
+// ✅ Allowed frontend origins (NO trailing slash)
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://renting-vehicle-front-end.vercel.app/", // replace with actual deployed frontend
+  "https://renting-vehicle-front-end.vercel.app",
 ];
+
+// ✅ CORS Middleware
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
@@ -29,7 +40,7 @@ app.use(
 // ✅ Parse JSON
 app.use(express.json());
 
-// ✅ Serve static files from uploads folder
+// ✅ Serve static files from "uploads" folder
 const __dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
@@ -39,9 +50,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/payment", paymentRoutes);
 
+// ✅ Root route
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+// ✅ Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
