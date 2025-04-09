@@ -17,7 +17,7 @@ connectDB();
 // ✅ CORS setup for frontend (localhost + production)
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://your-frontend-url.onrender.com", // replace with actual deployed frontend
+  "https://renting-vehicle-front-end.vercel.app/", // replace with actual deployed frontend
 ];
 app.use(
   cors({
