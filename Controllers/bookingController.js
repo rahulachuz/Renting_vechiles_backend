@@ -3,11 +3,12 @@ import User from "../Models/User.js";
 import Vehicle from "../Models/Vehicle.js";
 import nodemailer from "nodemailer";
 
-// ✅ Create Booking and Send Email
+// ✅ Create Booking and Send Confirmation Email
 export const createBooking = async (req, res) => {
   try {
     const { vehicle, startDate, endDate, totalPrice } = req.body;
 
+    // Save booking to DB
     const booking = new Booking({
       vehicle,
       user: req.user.id,
@@ -18,11 +19,11 @@ export const createBooking = async (req, res) => {
 
     const savedBooking = await booking.save();
 
-    // ✅ Get user and vehicle details for email
+    // Get user and vehicle info
     const user = await User.findById(req.user.id);
     const vehicleInfo = await Vehicle.findById(vehicle);
 
-    // ✅ Setup email transport
+    // Setup transporter
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -31,24 +32,37 @@ export const createBooking = async (req, res) => {
       },
     });
 
+    // Email content
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: user.email,
       subject: "✅ Booking Confirmed!",
       html: `
-        <h2>Booking Confirmed 🎉</h2>
-        <p>Hi ${user.name},</p>
-        <p>Your booking for <strong>${vehicleInfo.make} ${
+        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+          <h2 style="color: #4CAF50;">✅ Booking Successful!</h2>
+          <p>Hi <strong>${user.name}</strong>,</p>
+          <p>Thank you for choosing our Vehicle Rental Service.</p>
+          <p>Your booking for <strong>${vehicleInfo.make} ${
         vehicleInfo.model
-      }</strong> has been confirmed.</p>
-        <p><strong>Start:</strong> ${new Date(startDate).toDateString()}</p>
-        <p><strong>End:</strong> ${new Date(endDate).toDateString()}</p>
-        <p><strong>Total:</strong> ₹${totalPrice}</p>
-        <p>Thank you for using our service!</p>
+      }</strong> has been successfully confirmed.</p>
+          <ul style="padding-left: 20px;">
+            <li><strong>Start Date:</strong> ${new Date(
+              startDate
+            ).toDateString()}</li>
+            <li><strong>End Date:</strong> ${new Date(
+              endDate
+            ).toDateString()}</li>
+            <li><strong>Total Price:</strong> ₹${totalPrice}</li>
+          </ul>
+          <p style="margin-top: 20px;">We appreciate your business and hope you have a smooth and enjoyable ride. 🚗</p>
+          <p>If you have any questions, feel free to contact us anytime.</p>
+          <hr style="margin-top: 30px;" />
+          <p style="font-size: 12px; color: #777;">This is an automated message from Vehicle Rental. Please do not reply directly to this email.</p>
+        </div>
       `,
     };
 
-    // ✅ Send email
+    // Send email
     await transporter.sendMail(mailOptions);
 
     res.status(201).json(savedBooking);
@@ -79,7 +93,6 @@ export const getUserBookings = async (req, res) => {
       select: "make model imageUrl pricePerDay",
     });
 
-    // 🔍 Log to verify vehicle data
     bookings.forEach((booking, i) => {
       if (!booking.vehicle) {
         console.warn(`⚠️ Vehicle not found for booking ${booking._id}`);
